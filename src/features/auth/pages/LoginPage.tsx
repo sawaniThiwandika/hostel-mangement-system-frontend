@@ -1,26 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-
-const DEMO_EMAIL = 'admin@hostel.com'
-const DEMO_PASSWORD = 'admin123'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks'
+import { clearAuthError, loginUser } from '../authSlice'
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const dispatch = useAppDispatch()
+  const { loading, error, user } = useAppSelector((state) => state.auth)
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
-    if (email.trim().toLowerCase() !== DEMO_EMAIL || password !== DEMO_PASSWORD) {
-      setError('Invalid email or password. Please use the demo credentials below.')
-      return
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true })
     }
+  }, [navigate, user])
 
-    setError('')
-    navigate('/dashboard', { replace: true })
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    await dispatch(loginUser({ username: username.trim(), password }))
   }
 
   return (
@@ -35,18 +34,21 @@ export function LoginPage() {
 
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
-            Email address
+          <label htmlFor="username" className="mb-2 block text-sm font-medium text-slate-700">
+            Username
           </label>
           <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
+            id="username"
+            name="username"
+            type="text"
+            autoComplete="username"
             required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="admin@hostel.com"
+            value={username}
+            onChange={(event) => {
+              setUsername(event.target.value)
+              dispatch(clearAuthError())
+            }}
+            placeholder="Enter your username"
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
@@ -62,7 +64,10 @@ export function LoginPage() {
             autoComplete="current-password"
             required
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              setPassword(event.target.value)
+              dispatch(clearAuthError())
+            }}
             placeholder="Enter your password"
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
@@ -78,15 +83,9 @@ export function LoginPage() {
           type="submit"
           className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          Sign in
+          {loading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
-
-      <div className="mt-6 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
-        <p className="font-semibold text-slate-700">Demo credentials</p>
-        <p className="mt-1">Email: {DEMO_EMAIL}</p>
-        <p>Password: {DEMO_PASSWORD}</p>
-      </div>
 
       <p className="mt-6 text-center text-sm text-slate-500">
         Need an account?{' '}

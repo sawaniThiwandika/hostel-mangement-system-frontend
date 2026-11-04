@@ -9,7 +9,6 @@ import { PaymentPage } from '../features/payments/pages/PaymentPage'
 import { RoomPage } from '../features/rooms/pages/RoomPage'
 import { StaffPage } from '../features/staff/pages/StaffPage'
 import { StudentsPage } from '../features/students/pages/StudentsPage'
-import { HomePage } from '../pages/HomePage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -21,7 +20,6 @@ export function AppRoutes() {
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/" element={<HomePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/rooms" element={<RoomPage />} />
           <Route path="/students" element={<StudentsPage />} />
@@ -30,6 +28,7 @@ export function AppRoutes() {
           <Route path="/complaints" element={<ComplaintPage />} />
         </Route>
       </Route>
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
