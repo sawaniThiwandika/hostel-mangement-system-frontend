@@ -5,6 +5,7 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { SignUpPage } from '../features/auth/pages/SignUpPage'
 import { ComplaintPage } from '../features/complaints/pages/ComplaintPage'
 import { DashboardPage } from '../features/dashboard/pages/DashboardPage'
+import { HostelsPage } from '../features/hostels/pages/HostelsPage'
 import { PaymentPage } from '../features/payments/pages/PaymentPage'
 import { RoomPage } from '../features/rooms/pages/RoomPage'
 import { StaffPage } from '../features/staff/pages/StaffPage'
@@ -21,6 +22,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/hostels" element={<HostelsPage />} />
           <Route path="/rooms" element={<RoomPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/staff" element={<StaffPage />} />
