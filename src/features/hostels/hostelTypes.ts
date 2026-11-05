@@ -1,10 +1,20 @@
+export interface OwnerSummery {
+  ownerId: string
+  ownerName: string
+  nic: string
+  tel: string
+  email: string
+}
+
 export interface HostelSummary {
-  id: string
-  name?: string
-  hostelName?: string
-  address?: string
-  location?: string
-  description?: string
-  roomCount?: number
-  capacity?: number
+  hostelId: string
+  name: string
+  address: string
+  tel: string
+  email: string
+  location: string
+}
+
+export interface HostelResponse extends HostelSummary {
+  ownerSummery: OwnerSummery
 }

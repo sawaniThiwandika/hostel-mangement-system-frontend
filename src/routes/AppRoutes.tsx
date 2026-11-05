@@ -23,6 +23,7 @@ export function AppRoutes() {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/hostels" element={<HostelsPage />} />
+          <Route path="/my-hostels" element={<HostelsPage ownerOnly />} />
           <Route path="/rooms" element={<RoomPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/staff" element={<StaffPage />} />

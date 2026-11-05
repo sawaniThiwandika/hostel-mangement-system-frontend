@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 const navigation = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Hostels', path: '/hostels' },
+  { label: 'My Hostels', path: '/my-hostels' },
   { label: 'Rooms', path: '/rooms' },
   { label: 'Students', path: '/students' },
   { label: 'Staff', path: '/staff' },

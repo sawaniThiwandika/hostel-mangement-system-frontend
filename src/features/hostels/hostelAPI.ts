@@ -6,3 +6,8 @@ export async function getHostels() {
   const response = await axiosInstance.get<HostelSummary[]>(API_ENDPOINTS.hostels)
   return response.data
 }
+
+export async function getMyHostels() {
+  const response = await axiosInstance.get<HostelSummary[]>(API_ENDPOINTS.myHostels)
+  return response.data
+}

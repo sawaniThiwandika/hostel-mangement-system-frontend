@@ -1,18 +1,27 @@
-import { useEffect, useState } from 'react'
-import { getHostels } from '../hostelAPI'
+import { useCallback, useEffect, useState } from 'react'
+import { getHostels, getMyHostels } from '../hostelAPI'
 import type { HostelSummary } from '../hostelTypes'
 
-export function HostelsPage() {
+interface HostelsPageProps {
+  ownerOnly?: boolean
+}
+
+export function HostelsPage({ ownerOnly = false }: HostelsPageProps) {
   const [hostels, setHostels] = useState<HostelSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function loadHostels() {
+  const loadHostels = useCallback(
+    () => (ownerOnly ? getMyHostels() : getHostels()),
+    [ownerOnly],
+  )
+
+  async function reloadHostels() {
     setLoading(true)
     setError(null)
 
     try {
-      setHostels(await getHostels())
+      setHostels(await loadHostels())
     } catch {
       setError('We could not load the hostels. Please try again.')
     } finally {
@@ -23,7 +32,7 @@ export function HostelsPage() {
   useEffect(() => {
     let cancelled = false
 
-    void getHostels()
+    void loadHostels()
       .then((data) => {
         if (!cancelled) {
           setHostels(data)
@@ -43,7 +52,7 @@ export function HostelsPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [loadHostels])
 
   return (
     <section>
@@ -52,9 +61,13 @@ export function HostelsPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600">
             Directory
           </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Hostels</h1>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+            {ownerOnly ? 'My Hostels' : 'Hostels'}
+          </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Browse all hostels registered in the management system.
+            {ownerOnly
+              ? 'Manage hostels connected to your owner account.'
+              : 'Browse all hostels registered in the management system.'}
           </p>
         </div>
         {!loading && !error && (
@@ -71,7 +84,7 @@ export function HostelsPage() {
           <p role="alert" className="text-sm text-red-700">{error}</p>
           <button
             type="button"
-            onClick={() => void loadHostels()}
+            onClick={() => void reloadHostels()}
             className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
           >
             Try again
@@ -93,7 +106,7 @@ export function HostelsPage() {
 
       {!loading && !error && hostels.length > 0 && (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {hostels.map((hostel) => <HostelCard key={hostel.id} hostel={hostel} />)}
+          {hostels.map((hostel) => <HostelCard key={hostel.hostelId} hostel={hostel} />)}
         </div>
       )}
     </section>
@@ -101,40 +114,23 @@ export function HostelsPage() {
 }
 
 function HostelCard({ hostel }: { hostel: HostelSummary }) {
-  const name = hostel.hostelName ?? hostel.name ?? 'Unnamed hostel'
-  const location = hostel.address ?? hostel.location
-
   return (
     <article className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md">
       <div className="flex items-start justify-between gap-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-lg font-bold text-white">
-          {name.charAt(0).toUpperCase()}
+          {hostel.name.charAt(0).toUpperCase()}
         </div>
         <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
           Active
         </span>
       </div>
-      <h2 className="mt-5 text-lg font-semibold text-slate-900">{name}</h2>
-      <p className="mt-2 min-h-5 text-sm text-slate-500">{location ?? 'Location not provided'}</p>
-      {hostel.description && (
-        <p className="mt-4 line-clamp-2 text-sm leading-6 text-slate-600">{hostel.description}</p>
-      )}
-      {(hostel.roomCount !== undefined || hostel.capacity !== undefined) && (
-        <div className="mt-5 flex gap-5 border-t border-slate-100 pt-4 text-sm">
-          {hostel.roomCount !== undefined && (
-            <div>
-              <p className="font-semibold text-slate-900">{hostel.roomCount}</p>
-              <p className="text-slate-500">Rooms</p>
-            </div>
-          )}
-          {hostel.capacity !== undefined && (
-            <div>
-              <p className="font-semibold text-slate-900">{hostel.capacity}</p>
-              <p className="text-slate-500">Capacity</p>
-            </div>
-          )}
-        </div>
-      )}
+      <h2 className="mt-5 text-lg font-semibold text-slate-900">{hostel.name}</h2>
+      <p className="mt-2 text-sm text-slate-500">{hostel.address}</p>
+      <div className="mt-5 space-y-2 border-t border-slate-100 pt-4 text-sm text-slate-600">
+        <p><span className="font-medium text-slate-900">Location:</span> {hostel.location}</p>
+        <p><span className="font-medium text-slate-900">Phone:</span> {hostel.tel}</p>
+        <p className="break-all"><span className="font-medium text-slate-900">Email:</span> {hostel.email}</p>
+      </div>
     </article>
   )
 }
