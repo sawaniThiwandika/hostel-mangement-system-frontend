@@ -100,6 +100,7 @@ export function HostelsPage({ ownerOnly = false }: HostelsPageProps) {
       hostel={hostel}
       selected={ownerOnly && selectedHostel?.hostelId === hostel.hostelId}
       onView={ownerOnly ? () => viewHostel(hostel) : undefined}
+      showContactActions={!ownerOnly}
     />
   ))
 
@@ -177,10 +178,12 @@ function HostelCard({
   hostel,
   selected,
   onView,
+  showContactActions,
 }: {
   hostel: HostelSummary
   selected: boolean
   onView?: () => void
+  showContactActions: boolean
 }) {
   return (
     <article className={`group overflow-hidden rounded-2xl border bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg ${selected ? 'border-indigo-500 ring-4 ring-indigo-50' : 'border-slate-200 hover:border-indigo-200'}`}>
@@ -209,6 +212,12 @@ function HostelCard({
           <span className="truncate">{hostel.location}</span>
           <span className="shrink-0">{hostel.tel}</span>
         </div>
+        {showContactActions && (
+          <div className="mt-5 flex gap-2">
+            <ContactAction href={`tel:${hostel.tel}`} label="Call" disabled={!hostel.tel} />
+            <ContactAction href={`mailto:${hostel.email}`} label="Email" disabled={!hostel.email} />
+          </div>
+        )}
         {onView && (
           <button
             type="button"
@@ -330,6 +339,34 @@ function SectionHeading({ children }: { children: string }) {
       <span className="h-5 w-1 rounded-full bg-indigo-500" />
       {children}
     </h3>
+  )
+}
+
+function ContactAction({
+  href,
+  label,
+  disabled,
+}: {
+  href: string
+  label: string
+  disabled: boolean
+}) {
+  if (disabled) {
+    return (
+      <span className="cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-400">
+        {label} unavailable
+      </span>
+    )
+  }
+
+  return (
+    <a
+      href={href}
+      className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+    >
+      <span aria-hidden="true">{href.startsWith('tel:') ? '☎' : '✉'}</span>
+      {label}
+    </a>
   )
 }
 
