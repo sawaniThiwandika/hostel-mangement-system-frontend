@@ -28,9 +28,6 @@ export function HostelCard({
         </div>
         <div className="mt-5">
           <h2 className="truncate text-lg font-bold text-slate-900">{hostel.name}</h2>
-          <p className="mt-1 text-xs font-medium uppercase tracking-wide text-slate-400">
-            ID: {hostel.hostelId}
-          </p>
         </div>
         <div className="mt-5 rounded-xl bg-slate-50 p-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Address</p>
