@@ -4,4 +4,5 @@ export const API_ENDPOINTS = {
   refresh: '/api/v1/auth/refresh',
   hostels: '/api/v1/hostels',
   myHostels: '/api/v1/hostels/my',
+  hostelById: (id: string) => `/api/v1/hostels/${encodeURIComponent(id)}`,
 } as const
